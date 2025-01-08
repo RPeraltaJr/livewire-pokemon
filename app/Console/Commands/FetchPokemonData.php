@@ -66,9 +66,8 @@ class FetchPokemonData extends Command
                     ->firstWhere('language.name', 'en')['flavor_text'] ?? null;
 
                 if ($pokemonDescription) {
-                    $pokemonDescription = preg_replace('/[\x00-\x1F\x7F-\x9F]+/', ' ', $pokemonDescription);
-                    $pokemonDescription = preg_replace('/\s+/', ' ', $pokemonDescription);
-                    $pokemonDescription = trim($pokemonDescription);
+                    // Convert to UTF-8 to handle any misencoded characters
+                    $pokemonDescription = mb_convert_encoding($pokemonDescription, 'UTF-8', 'auto');
                 }
 
                 // * Find or create the generation with main_region
