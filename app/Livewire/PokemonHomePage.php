@@ -80,6 +80,9 @@ class PokemonHomePage extends Component
             ->when($this->sort, function ($query) {
                 $order = in_array($this->order, ['asc', 'desc']) ? $this->order : 'desc';
                 $query->orderBy($this->sort, $order);
+            }, function ($query) {
+                // Default ordering by pokedex_id in ascending order
+                $query->orderBy('pokedex_id', 'asc');
             })
             ->paginate($this->perPage);
 
