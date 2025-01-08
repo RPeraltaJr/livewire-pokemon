@@ -29,8 +29,8 @@ class FetchPokemonData extends Command
      *
      * @var integer
      */
-    protected $offset = 803;
-    protected $limit = 222;
+    protected $offset = 0;
+    protected $limit = 1025;
 
     /**
      * Execute the console command.
