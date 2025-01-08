@@ -11,27 +11,29 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pokemon', function (Blueprint $table) {
-            $table->id();
-            $table->string('pokedex_id')->unique();
-            $table->string('name');
-            // $table->string('type');
-            $table->integer('height')->nullable();
-            $table->integer('weight')->nullable();
-            $table->string('sprite')->nullable();
-            $table->string('sprite_shiny')->nullable();
-            $table->string('artwork')->nullable();
-            $table->string('artwork_shiny')->nullable();
-            $table->integer('hp')->nullable();
-            $table->integer('attack')->nullable();
-            $table->integer('defense')->nullable();
-            $table->integer('sp_attack')->nullable();
-            $table->integer('sp_defense')->nullable();
-            $table->integer('speed')->nullable();
-            $table->text('description')->nullable();
-            $table->foreignId('generation_id')->nullable()->constrained('generations')->cascadeOnDelete();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('pokemon')) {
+            Schema::create('pokemon', function (Blueprint $table) {
+                $table->id();
+                $table->string('pokedex_id')->unique();
+                $table->string('name');
+                // $table->string('type');
+                $table->integer('height')->nullable();
+                $table->integer('weight')->nullable();
+                $table->string('sprite')->nullable();
+                $table->string('sprite_shiny')->nullable();
+                $table->string('artwork')->nullable();
+                $table->string('artwork_shiny')->nullable();
+                $table->integer('hp')->nullable();
+                $table->integer('attack')->nullable();
+                $table->integer('defense')->nullable();
+                $table->integer('sp_attack')->nullable();
+                $table->integer('sp_defense')->nullable();
+                $table->integer('speed')->nullable();
+                $table->text('description')->nullable();
+                $table->foreignId('generation_id')->nullable()->constrained('generations')->cascadeOnDelete();
+                $table->timestamps();
+            });
+        }
     }
 
     /**
