@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('pokemon', function (Blueprint $table) {
             $table->id();
             $table->integer('pokedex_id')->unique();
+            $table->string('pokedex_id_string')->nullable();
             $table->string('name');
             // $table->string('type');
             $table->integer('height')->nullable();

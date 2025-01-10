@@ -3,7 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Pokemon;
-use Livewire\Attributes\Title;
+// use Livewire\Attributes\Title;
 use Livewire\Component;
 
 // #[Title("$pokemon->name")]
@@ -19,7 +19,7 @@ class PokemonDetailPage extends Component
     public function render()
     {
         return view('livewire.pokemon-detail-page', [
-            'pokemonCount' => Pokemon::count(), // Efficient count query
+            // 'pokemonCount' => Pokemon::count(), // Efficient count query
         ])->title(ucwords($this->pokemon->name) . '- Pokédex');
     }
 }

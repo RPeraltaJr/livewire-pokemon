@@ -31,12 +31,17 @@ class FetchPokemonData extends Command
      */
     protected $offset = 0;
     protected $limit = 1025;
+    // protected $offset = 3;
+    // protected $limit = 6;
 
     /**
      * Execute the console command.
      */
     public function handle()
     {
+        // * Start time
+        $startTime = microtime(true);
+
         $url = "https://pokeapi.co/api/v2/pokemon?limit={$this->limit}&offset={$this->offset}"; // https://pokeapi.co/
         $response = Http::get($url);
 
@@ -44,6 +49,13 @@ class FetchPokemonData extends Command
             $pokemonData = $response->json('results');
             $typeCache = Type::all()->keyBy('name');
             $generationCache = [];
+
+            $this->info('Loading Pokémon data...');
+
+            $bulkInsertData = [];
+            $bulkTypeSyncData = [];
+            $count = 0;
+            $totalPokemon = count($pokemonData); // Total number of Pokémon to process
 
             foreach ($pokemonData as $pokemon) {
                 $pokemonStatsResponse = Http::retry(3, 100)->get($pokemon['url']);
@@ -87,45 +99,83 @@ class FetchPokemonData extends Command
                     $generation = $generationCache[$generationName];
                 }
 
-                // * Get or create the Pokemon record
-                $pokemonModel = Pokemon::updateOrCreate(
-                    [
-                        'pokedex_id'    => str_pad($pokemonStats['id'], 3, '0', STR_PAD_LEFT), // Ensure uniqueness by Pokedex ID
-                    ],
-                    [
-                        'name'          => $pokemon['name'],
-                        'height'        => $pokemonStats['height'],
-                        'weight'        => $pokemonStats['weight'],
-                        'sprite'        => $pokemonStats['sprites']['front_default'],
-                        'sprite_shiny'  => $pokemonStats['sprites']['front_shiny'],
-                        'artwork'       => $pokemonStats['sprites']['other']['official-artwork']['front_default'],
-                        'artwork_shiny' => $pokemonStats['sprites']['other']['official-artwork']['front_shiny'],
-                        'hp'            => $stats->get('hp'),
-                        'attack'        => $stats->get('attack'),
-                        'defense'       => $stats->get('defense'),
-                        'sp_attack'     => $stats->get('special_attack'),
-                        'sp_defense'    => $stats->get('special_defense'),
-                        'speed'         => $stats->get('speed'),
-                        'description'   => $pokemonDescription,
-                        'generation_id' => $generation->id, // Associate the generation
-                    ]
-                );
+                $pokemonPokedexID = str_pad($pokemonStats['id'], 3, '0', STR_PAD_LEFT);
 
-                // * Sync types
-                $typeIds = [];
+                // Prepare data for bulk insert
+                $bulkInsertData[] = [
+                    'pokedex_id'        => $pokemonPokedexID,
+                    'pokedex_id_string' => $pokemonPokedexID,
+                    'name'              => $pokemon['name'],
+                    'height'            => $pokemonStats['height'],
+                    'weight'            => $pokemonStats['weight'],
+                    'sprite'            => $pokemonStats['sprites']['front_default'],
+                    'sprite_shiny'      => $pokemonStats['sprites']['front_shiny'],
+                    'artwork'           => $pokemonStats['sprites']['other']['official-artwork']['front_default'],
+                    'artwork_shiny'     => $pokemonStats['sprites']['other']['official-artwork']['front_shiny'],
+                    'hp'                => $stats['hp'],
+                    'attack'            => $stats['attack'],
+                    'defense'           => $stats['defense'],
+                    'sp_attack'         => $stats['special_attack'],
+                    'sp_defense'        => $stats['special_defense'],
+                    'speed'             => $stats['speed'],
+                    'description'       => $pokemonDescription,
+                    'generation_id'     => $generation->id,
+                ];
+
+                // Prepare types for syncing
                 foreach ($pokemonStats['types'] as $typeData) {
                     $typeName = $typeData['type']['name'];
                     if (!isset($typeCache[$typeName])) {
                         $typeCache[$typeName] = Type::create(['name' => $typeName]);
                     }
-                    $typeIds[] = $typeCache[$typeName]->id;
+                    $bulkTypeSyncData[$pokemonStats['id']][] = $typeCache[$typeName]->id;
                 }
-                $pokemonModel->types()->sync($typeIds);
+
+                $count++;
+
+                // * Calculate and display the progress
+                $percentage = round(($count / $totalPokemon) * 100);
+                echo "\r{$percentage}%\r";  // Print progress
+            }
+
+            // Bulk insert Pokémon data
+            Pokemon::upsert($bulkInsertData, ['pokedex_id'], [
+                'pokedex_id_string',
+                'name',
+                'height',
+                'weight',
+                'sprite',
+                'sprite_shiny',
+                'artwork',
+                'artwork_shiny',
+                'hp',
+                'attack',
+                'defense',
+                'sp_attack',
+                'sp_defense',
+                'speed',
+                'description',
+                'generation_id'
+            ]);
+
+            // Sync types in bulk
+            foreach ($bulkTypeSyncData as $pokedexId => $typeIds) {
+                $pokemon = Pokemon::where('pokedex_id', $pokedexId)->first();
+                if ($pokemon) {
+                    $pokemon->types()->sync($typeIds);
+                }
             }
 
             $this->info('Pokémon data inserted successfully!');
         } else {
             $this->error('Failed to fetch Pokémon data.');
         }
+
+        // * End time
+        $endTime = microtime(true);
+
+        // * Calculate and display the execution time
+        $executionTime = $endTime - $startTime;
+        $this->info("Execution Time: " . round($executionTime, 2) . " seconds");
     }
 }

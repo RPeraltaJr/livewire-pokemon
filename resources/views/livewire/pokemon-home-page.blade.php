@@ -73,11 +73,18 @@
         {{ $pokemons->links() }}
     </div>
 
+
+    @if ($pokemons->isEmpty())
+    <div class="text-center py-10">
+        <p class="text-gray-600 text-lg">No Pokémon found. Try adjusting your search or filters.</p>
+    </div>
+    @endif
+
     <ul class="Pokemon-table__list grid gap-x-2 gap-y-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4 md:gap-y-2"
         role="list">
         @foreach ($pokemons as $pokemon)
         <li class="Pokemon-table__list__item rounded flex flex-wrap">
-            <a href="/pokemon/{{ $pokemon->id }}" class="bg-white border p-6 transition hover:border-black">
+            <a href="/pokemon/{{ $pokemon->pokedex_id }}" class="bg-white border p-6 transition hover:border-black">
                 <div>
                     {{-- <img src="{{ $pokemon->artwork }}" alt="{{ $pokemon->name }}" class="w-full bg-gray-100"> --}}
                     {{-- <img src="{{ $pokemon->artwork_shiny }}" alt="{{ $pokemon->name }} shiny"
