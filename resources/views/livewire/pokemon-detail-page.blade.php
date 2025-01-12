@@ -47,44 +47,44 @@
                 </li>
                 <li>
                     <p class="font-bold text-center mb-4">Base Stats</p>
-                    <table class="charts-css bar show-labels show-heading">
+                    <table
+                        class="charts-css bar show-labels show-heading charts-css-type-{{ $pokemon->types[0]->name }}">
                         <tbody>
                             <tr>
                                 <th scope="row" title="HP">HP</th>
-                                <td style="--size: {{ $pokemon->hp / 255 }}; background: #325AA1; color: white">{{
-                                    $pokemon->hp }}
+                                <td style="--size: {{ $pokemon->hp / 255 }};">
+                                    {{ $pokemon->hp }}
                                 </td>
                             </tr>
                             <tr>
                                 <th scope="row" title="Attack">Atk</th>
-                                <td style="--size: {{ $pokemon->attack / 255 }}; background: #6e809e; color: white">{{
-                                    $pokemon->attack }}
+                                <td style="--size: {{ $pokemon->attack / 255 }};">
+                                    {{ $pokemon->attack }}
                                 </td>
                             </tr>
                             <tr>
                                 <th scope="row" title="Defense">Def</th>
-                                <td style="--size: {{ $pokemon->defense / 255 }}; background: #325AA1; color: white">{{
-                                    $pokemon->defense }}
+                                <td style="--size: {{ $pokemon->defense / 255 }};">
+                                    {{ $pokemon->defense }}
                                 </td>
                             </tr>
                             <tr>
                                 <th scope="row" title="Special Attack">Sp Atk</th>
-                                <td style="--size: {{ $pokemon->sp_attack / 255 }}; background: #6e809e; color: white">
-                                    {{
-                                    $pokemon->sp_attack
-                                    }}</td>
+                                <td style="--size: {{ $pokemon->sp_attack / 255 }};">
+                                    {{ $pokemon->sp_attack }}
+                                </td>
                             </tr>
                             <tr>
                                 <th scope="row" title="Special Defense">Sp Def</th>
-                                <td style="--size: {{ $pokemon->sp_defense / 255 }}; background: #325AA1; color: white">
-                                    {{
-                                    $pokemon->sp_defense }}</td>
+                                <td style="--size: {{ $pokemon->sp_defense / 255 }};">
+                                    {{ $pokemon->sp_defense }}
+                                </td>
                             </tr>
                             <tr>
                                 <th scope="row" title="Speed">Speed</th>
-                                <td style="--size: {{ $pokemon->speed / 255 }}; background: #6e809e; color: white">{{
-                                    $pokemon->speed
-                                    }}</td>
+                                <td style="--size: {{ $pokemon->speed / 255 }};">
+                                    {{ $pokemon->speed }}
+                                </td>
                             </tr>
                         </tbody>
                     </table>

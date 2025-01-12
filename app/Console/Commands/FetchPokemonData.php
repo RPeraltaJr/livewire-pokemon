@@ -31,8 +31,8 @@ class FetchPokemonData extends Command
      */
     protected $offset = 0;
     protected $limit = 1025;
-    // protected $offset = 3;
-    // protected $limit = 6;
+    // protected $offset = 0;
+    // protected $limit = 10;
 
     /**
      * Execute the console command.
@@ -78,6 +78,8 @@ class FetchPokemonData extends Command
                     ->firstWhere('language.name', 'en')['flavor_text'] ?? null;
 
                 if ($pokemonDescription) {
+                    // Remove all non-ASCII characters
+                    $pokemonDescription = preg_replace('/[\x00-\x1F\x7F\x{000C}\x{0080}-\x{009F}]/u', ' ', $pokemonDescription);
                     // Convert to UTF-8 to handle any misencoded characters
                     $pokemonDescription = mb_convert_encoding($pokemonDescription, 'UTF-8', 'auto');
                 }

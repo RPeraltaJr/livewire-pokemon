@@ -3,7 +3,8 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
-        "dev": "vite"
+        "dev": "vite",
+        "fetch": "php artisan migrate:refresh && php artisan fetch:pokemon"
     },
     "devDependencies": {
         "autoprefixer": "^10.4.20",
